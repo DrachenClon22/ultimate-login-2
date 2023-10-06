@@ -1,8 +1,9 @@
 # Minecraft Ultimate Login 2 plugin
 
 - UltimateLogin 2.0.0
-- Target version: 1.20+
+- Target Version: 1.20+
 - Author: DrachenClon22
+- Supported Languages: English, Russian
 
 Updates from version 1:
 - Accounts data doesn't divide to rows in accounts file, now it's raw data all in 1 line only;
