@@ -1,0 +1,57 @@
+# Plugin to login on servers. Can be used for online servers if admins have paranoia or needed any kind of additional protection. Perfect solution for offline servers because plugin does not require to enter password every time user logs in. All users' data stored in encrypted format, if any people see account file they can't decode it back.
+
+name: UltimateLogin
+version: 2.0.0
+author: DrachenClon22
+description: Ultimate login plugin for paranoia admins or offline servers.
+
+main: com.drachenclon.dreg.UltimateLogin
+api-version: '1.20'
+
+commands:
+  register:
+    usage: /<command> <password> <password>
+    permission: login.basic
+  login:
+    usage: /<command> <password>
+    permission: login.basic
+  password:
+    usage: /<command> change <from> <to> <to>
+    permission: login.basic
+    
+permissions:
+  login.basic:
+       description: Allows to use the basic commands
+       default: true
+  login.*:
+       description: Get access to all UltimateLogin commands
+       default: op
+       children:
+         login.basics: true
+         login.set.*: true
+         login.set.other: true
+         login.set.admin: true
+         login.delete.users: true
+         login.delete.admin: true
+  login.delete.users:
+       description: Allows to delete passwords for users
+       default: op
+  login.delete.admin:
+       description: Allows to delete passwords for admins
+       default: op
+       children:
+         login.delete.users: true
+  login.set.*:
+       description: Allows to use all of the set commands
+       default: op
+       children:
+         login.set.other: true
+         login.set.admin: true
+  login.set.admin:
+       description: Allows to use all of the set commands for players and admins
+       default: op
+       children:
+         login.set.other: true
+  login.set.other:
+       description: Allows to use all of the set commands for players
+       default: op

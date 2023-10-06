@@ -1,0 +1,66 @@
+# Ultimate Login plugin
+# Current version: 2.0.0
+# Author: DrachenClon22
+# Build Date: 2023.10.05
+
+# Max attempts given to user, after reaching more than max-attempts user gets banned.
+# Attempts can't be more than 255.
+max-attempts: 5
+# Language of all messages that will be displayed.
+# Supported languages: en, ru.
+language: en
+# Minimum length of user password. Cannot be less than 5
+min-pass-length: 5
+# Maximim length of user password. Cannot be more than 255
+max-pass-length: 20
+
+# Languages. If you want to add your own languages, just add it here in config file as shown below.
+lang:
+  en:
+    use_register_chat: "&7To register use &6/register <password> <password>"
+    use_login_chat: "&7To login use &6/login <password>"
+    attempts_zero: "&cYou've reached max attempts"
+    already_logged: "&7You are already in"
+    welcome_back: "&aWelcome back, &6{name}"
+    success: "&aSuccessful!"
+    should_be_same: "&cPasswords should match!"
+    already_registered: "&cYou are already registered. Remaining attempts: &6{attempts}"
+    error: "&4&lUnknown error: {error_num}. Contact admins ASAP"
+    wrong_password: "&cWrong password. Remaining attempts: &6{attempts}"
+    logged_out: "&cYou have been logged out"
+    not_logged_in: "&cYou have to be authorized to do this"
+    no_permission: "&cYou don't have access to this command"
+    password_user_changed: "&aPassword of user &6{changed_player} &ahas been changed"
+    password_self_changed: "&aPassword has been changed"
+    password_changed_deny: "&cYou can't change password to: &6{changed_player}"
+    specify_args: "&7Wrong arguments"
+    special_symbols_deny: "&cDon't use special characters in your password!"
+    password_too_short: "&cPassword is too short!"
+    password_too_long: "&cPassword is too long!"
+    user_deleted_success: "&aUser &6{user} &adeleted"
+    user_does_not_exist: "&cUser &6{user} &cdoes not exist in database"
+    to_set_yourself: "&cTo change your own password, use &7/password change &c command"
+  ru:
+    use_register_chat: "&7Чтобы зарегистрироваться, используй &6/register <пароль> <пароль>"
+    use_login_chat: "&7Чтобы войти, используй &6/login <пароль>"
+    attempts_zero: "&cВы превысили количество попыток"
+    already_logged: "&7Вы уже авторизованы"
+    welcome_back: "&aС возвращением, &6{name}"
+    success: "&aАвторизация успешна"
+    should_be_same: "&cПароли должны совпадать!"
+    already_registered: "&cВы уже зарегистрированы. Попыток осталось: &6{attempts}"
+    error: "&4&lНепредвиденная ошибка: {error_num}. Немедленно свяжитесь с администратором."
+    wrong_password: "&cНеправильный пароль. Попыток осталось: &6{attempts}"
+    logged_out: "&cВы были выведены из системы"
+    not_logged_in: "&cДля совершения этого действия требуется авторизация"
+    no_permission: "&cУ вас нет прав на выполнение этой команды."
+    password_user_changed: "&aПароль игрока &6{changed_player} &aбыл изменен"
+    password_self_changed: "&aВаш пароль был изменен"
+    password_changed_deny: "&cНельзя изменить пароль игроку: &6{changed_player}"
+    specify_args: "&7Неправильно указаны аргументы"
+    special_symbols_deny: "&cНе используйте спецсимволы в пароле!"
+    password_too_short: "&cСлишком короткий пароль!"
+    password_too_long: "&cСлишком длинный пароль!"
+    user_deleted_success: "&aUser &6{user} &adeleted"
+    user_does_not_exist: "&cUser &6{user} &cdoes not exist in database"
+    to_set_yourself: "&cTo change your own password, use &7/password change &c command"
