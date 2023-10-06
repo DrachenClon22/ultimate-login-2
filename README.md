@@ -69,3 +69,6 @@ login.set.other:
      description: Allows to use all of the set commands for players
      default: op
 ```
+
+Links:
+- [Spigot Plugin Page](https://www.spigotmc.org/resources/ultimate-login.112969/)
