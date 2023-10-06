@@ -5,7 +5,7 @@
 - Author: DrachenClon22
 
 Updates from version 1:
-- Accounts data doesn't divide to rows in accounts file, raw data all in 1 line only;
+- Accounts data doesn't divide to rows in accounts file, now it's raw data all in 1 line only;
 - Changed hash method to SHA-256;
 - Added attempts for users who have used a wrong password on login command;
 - Added multiple configs in config file;
