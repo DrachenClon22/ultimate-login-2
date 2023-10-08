@@ -13,14 +13,18 @@ Updates from version 1:
 - Added different language support;
 - Added logout command;
 
+Features:
+- Accounts file doesn't contain any readable information. If someone can compromise your server files, they won't even get nicknames, even admins.<br /> Example of raw user account file: `u8JxG/HRwVKyGwDNrfifpjfHYjj/yHGxfhu1ypkIoQQ=iyf3gqHFNI2Jcs55zUuUv5NpPQz3cDE05QGNoiGAi14=R0rMCu0qXk/NJm+JZe3wlJ7sLbyobjSRajZt5eO5m4Q=EsoXtJryKJQ28wPgFmAwoh5SXSZuIJJnQzgBqP1AcaA=00`;
+- Protection against file modification. If someone modified accounts file, remain info still usable by plugin;
+- User information saved inside file, so no need to enter password every time they join, only if suspicious activity spotted;
+- If user ran of of their attempts, user gets permanently banned, until admins manually pardon them.
+
 Minecraft bukkit plugin for user authorization in cases:
 1. Need additional protection for players or administration even on online servers;
 2. Offline servers;
 3. Other unknown for me reasons.
 
 Version 1 was made and used only by me and my friends, so it's never listed anywhere, but still this is version 2.
-
-When using this plugin, user doesn't have to enter password every time they join. Only if suspicious activity spotted.
 
 Basic commands:
 - `/register <password> <password>` - used for registration on the server, it is recommended to remember the password, because you do not have to enter it every time you logging on the server;
