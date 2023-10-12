@@ -37,7 +37,7 @@ Admin commands:
 - `/password user <user> delete` - remove user from database.
 
 Permissions:
-```
+```MiniYAML
 login.basic:
      description: Allows to use the basic commands
      default: true
