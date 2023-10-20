@@ -50,8 +50,10 @@ public class LoginCommand implements CommandExecutor {
 						message = LanguageReader.GetLine("use_register_chat");
 					} else {
 						int maxAttempts = Integer.parseInt(ConfigReader.GetConfigValue("max-attempts"));
+						int attempts = maxAttempts - hash.GetCurrentAttempts();
+						
 						message = LanguageReader.GetLine("wrong_password").replace("{attempts}", 
-								String.valueOf(maxAttempts - hash.GetCurrentAttempts() + 1));
+								String.valueOf(attempts));
 					}
 				}
 				

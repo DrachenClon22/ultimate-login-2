@@ -20,6 +20,10 @@ public final class HashService {
 		FileManager.TryReplaceInFile(hashInfo.GetStartedFullHash(), hashInfo.GetCurrentHash());
 	}
 	
+	public static void UpdateHash(PlayerHashInfo hashInfo) {
+		FileManager.TryReplaceInFile(hashInfo.GetStartedFullHash(), hashInfo.GetCurrentHash());
+	}
+	
 	/**
 	 * Check available attempts for user's hash
 	 * @param hashInfo Hash of the current user
@@ -27,7 +31,12 @@ public final class HashService {
 	 * than 0 attempts (1 or more)
 	 */
 	public static boolean CheckAttempts(PlayerHashInfo hashInfo) {
-		int maxAttempts = Integer.parseInt(ConfigReader.GetConfigValue("max-attempts"));
+		int maxAttempts;
+		try {
+			maxAttempts = Integer.parseInt(ConfigReader.GetConfigValue("max-attempts"));
+		} catch (Exception e) {
+			maxAttempts = 5;
+		}
 		int currentAttempts = hashInfo.GetCurrentAttempts();
 		
 		if (currentAttempts > maxAttempts) {

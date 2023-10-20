@@ -29,7 +29,10 @@ public final class PlayerHashInfo {
 		if (Validator.TryValidateHash(input)) {
 			String[] blocks = new String[5];
 			blocks[4] = input.substring(input.length() - 2);
-			int attempts = (int)blocks[4].toCharArray()[0];
+			int attempts = (int)blocks[4].toCharArray()[0] - 48;
+			if (attempts < 0) {
+				attempts = 0;
+			}
 			int blockSize = HashBuilder.GetBlockSize();
 			for (int i = 0; i < blocks.length - 1; i++) {
 				blocks[i] = input.substring((i * blockSize), (i + 1) * blockSize);
@@ -73,7 +76,7 @@ public final class PlayerHashInfo {
 	
 	public String GetCurrentHash() {
 		return GetNicknameHashAsString() + GetPasswordHashAsString() + GetSaltAsString() 
-		+ GetIPHashAsString() + (char)GetCurrentAttempts() + '\0';
+		+ GetIPHashAsString() + (char)(GetCurrentAttempts()+48) + '0';
 	}
 	
 	public String GetSaltAsString() {

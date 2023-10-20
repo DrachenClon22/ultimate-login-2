@@ -34,14 +34,15 @@ public final class AuthHandler {
 	 * <br>False if user's ip in database not matching with user's current ip.
 	 */
 	public static boolean TryAuthWithIp(String username, String ip) {
-		String usernameHash = HashBuilder.GetStringHash(username);
-		String ipHash = HashBuilder.GetStringHash(ip);
-		
-		PlayerHashInfo hashInfo = PlayerRepo.GetPlayerInstance(username).GetHashInfo();
-		
-		if (hashInfo == null) {
+		PlayerHashInfo hashInfo;
+		try {
+			hashInfo = new PlayerHashInfo(FileParser.GetPlayerInfo(username));
+		} catch (Exception e) {
 			return false;
 		}
+		
+		String usernameHash = HashBuilder.GetStringHash(username);
+		String ipHash = HashBuilder.GetStringHash(ip + hashInfo.GetSaltAsString());
 
 		return (hashInfo.GetNicknameHashAsString().equals(usernameHash)) &&
 				(hashInfo.GetIPHashAsString().equals(ipHash));
@@ -51,28 +52,32 @@ public final class AuthHandler {
 		return TryRegister(player.getName(), password, player.getAddress().getAddress().toString());
 	}
 	public static boolean TryRegister(String username, String password, String ip) {
-
-		PlayerInstance playerInstance = PlayerRepo.GetPlayerInstance(username);
-		
-		// This was made for JUnit testing purposes, actual user always has PlayerInstance (not authed)
-		if (playerInstance == null) {
-			playerInstance = new PlayerInstance(null, null);
-		}
 		
 		// If user already has HashInfo means user's already registered
-		PlayerHashInfo hashInfo = playerInstance.GetHashInfo();
-		if (hashInfo != null) {
-			hashInfo.ReduceAttempts();
-			HashService.UpdateHash(playerInstance, hashInfo);
-			return false;
+		PlayerHashInfo hashInfo = null;
+		String playerInfo = FileParser.GetPlayerInfo(username);
+		if (playerInfo != null) {
+			try {
+				hashInfo = new PlayerHashInfo(playerInfo);
+			} catch (StringCantBeValidatedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			if (hashInfo != null) {
+				hashInfo.ReduceAttempts();
+				HashService.UpdateHash(hashInfo);
+				return false;
+			}
 		}
 		
-		String ipHash = HashBuilder.GetStringHash(ip);
+		String salt = SaltBuilder.GetRandomSaltString();
+		String ipHash = HashBuilder.GetStringHash(ip + salt);
 		return FileManager.TryWriteToFile(GenerateUserHash(
 				username, 
 				password, 
-				SaltBuilder.GetRandomSaltString()
-				) + ipHash + '\0' + '\0');
+				salt
+				) + ipHash + '0' + '0');
 	}
 	
 	public static boolean TryAuthWithPassword(Player player, String password) {
@@ -80,31 +85,42 @@ public final class AuthHandler {
 	}
 	public static boolean TryAuthWithPassword(String username, String password) {
 		
-		PlayerInstance playerInstance = PlayerRepo.GetPlayerInstance(username);
-		PlayerHashInfo hashInfo = playerInstance.GetHashInfo();
-		
-		if (hashInfo == null) {
+		//PlayerInstance playerInstance = PlayerRepo.GetPlayerInstance(username);
+		PlayerHashInfo hashInfo;
+		try {
+			hashInfo = new PlayerHashInfo(FileParser.GetPlayerInfo(username));
+		} catch (StringCantBeValidatedException e) {
 			return false;
 		}
-		
-		Player player = PlayerRepo.GetPlayerInstance(username).GetPlayer();
 		boolean result = CheckPassword(password, hashInfo);
 		
+		PlayerInstance player = PlayerRepo.GetPlayerInstance(username);
 		if (!result) {
 			hashInfo.ReduceAttempts();
 			
 			if (!HashService.CheckAttempts(hashInfo)) {
 				hashInfo.ResetAttempts();
 				
-				String message = LanguageReader.GetLine("attempts_zero");
-				BanHandler.Ban(player, message);
+				try {
+					String message = LanguageReader.GetLine("attempts_zero");
+					BanHandler.Ban(username, message);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 		} else {
-			hashInfo.SetIpHash(HashBuilder.GetStringHash(player.getAddress().getAddress().toString()));
+			if (player != null) {
+				hashInfo.SetIpHash(HashBuilder.GetStringHash(player.GetPlayer().getAddress().getAddress().toString()
+						+ hashInfo.GetSaltAsString()));
+			}
 			hashInfo.ResetAttempts();
 		}
-		HashService.UpdateHash(playerInstance, new PlayerHashInfo(hashInfo));
+		if (player != null) {
+			HashService.UpdateHash(player, new PlayerHashInfo(hashInfo));
+		} else {
+			HashService.UpdateHash(new PlayerHashInfo(hashInfo));
+		}
 		
 		return result;
 	}

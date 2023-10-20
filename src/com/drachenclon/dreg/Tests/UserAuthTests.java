@@ -4,16 +4,12 @@ import java.nio.file.Path;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.drachenclon.dreg.AuthManager.AuthHandler;
 import com.drachenclon.dreg.Exceptions.NoLocalPathException;
-import com.drachenclon.dreg.Exceptions.StringCantBeValidatedException;
 import com.drachenclon.dreg.FileManager.FileBuilder;
-import com.drachenclon.dreg.FileManager.FileParser;
 import com.drachenclon.dreg.HashManager.HashBuilder;
 import com.drachenclon.dreg.HashManager.HashBuilders.SHA256Builder;
-import com.drachenclon.dreg.PlayerManager.Hash.PlayerHashInfo;
 
 /**
  * Tests for testing user auth system.
@@ -48,8 +44,7 @@ class UserAuthTests {
 		} catch (NoLocalPathException e) {
 			e.printStackTrace();
 		}
-		System.out.println(HashBuilder.GetByteSize());
-		Assert.assertTrue("Can't register", AuthHandler.TryRegister("username2", "password2", "127.0.0.1"));
+		Assert.assertTrue("Can't register", AuthHandler.TryRegister("username3", "password2", "127.0.0.1"));
 	}
 	
 	/**
@@ -66,26 +61,17 @@ class UserAuthTests {
 	void testUserAuth() {
 		try {
 			FileBuilder.init(Path.of("").toAbsolutePath().toFile(), FILENAME);
-			// In this test SHA256 used, main plugin may use different algorithm.
 			HashBuilder.init(new SHA256Builder());
 		} catch (NoLocalPathException e) {
 			e.printStackTrace();
 		}
 		
-		PlayerHashInfo hashInfo = null;
-		try {
-			String info = FileParser.GetPlayerInfo("username2");
-			hashInfo = new PlayerHashInfo(info);
-		} catch (StringCantBeValidatedException e) {
-			e.printStackTrace();
-		}
+		// Password and login should match ones that in testUserRegistration()
+		String login = "username3";
+		String password = "password3";
+		String ip = "127.0.0.1";
 		
-		if (hashInfo==null) {
-			fail("No player hash info found");
-		}
-		
-		String passwordHash = HashBuilder.GetStringHash("password2" + hashInfo.GetSaltAsString());
-		
-		Assert.assertTrue("Can't login", hashInfo.GetPasswordHashAsString().equals(passwordHash));
+		Assert.assertTrue("Login with password failed", AuthHandler.TryAuthWithPassword(login, password));
+		Assert.assertTrue("Login with IP failed", AuthHandler.TryAuthWithIp(login, ip));
 	}
 }

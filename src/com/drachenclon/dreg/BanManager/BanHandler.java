@@ -13,6 +13,11 @@ public final class BanHandler {
 		Kick(player, message);
 	}
 	
+	@SuppressWarnings("deprecation")
+	public static void Ban(String player, String message) {
+		Bukkit.getBanList(BanList.Type.NAME).addBan(player, message, null, "UltimateLogin2");
+	}
+	
 	public static void BanIp(Player player, String message) {
 		InetAddress playerAddress = player.getAddress().getAddress();
 		Bukkit.banIP(playerAddress);
