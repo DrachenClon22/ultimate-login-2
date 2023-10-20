@@ -11,7 +11,7 @@ Updates from version 1:
 - Added attempts for users who have used a wrong password on login command;
 - Added multiple configs in config file;
 - Added different language support;
-- Added logout command;
+- Added logout command.
 
 Features:
 - Accounts file doesn't contain any readable information. If someone can compromise your server files, they won't even get nicknames, not even the administration, not even me.<br /> Example of raw user account file: `u8JxG/HRwVKyGwDNrfifpjfHYjj/yHGxfhu1ypkIoQQ=iyf3gqHFNI2Jcs55zUuUv5NpPQz3cDE05QGNoiGAi14=R0rMCu0qXk/NJm+JZe3wlJ7sLbyobjSRajZt5eO5m4Q=EsoXtJryKJQ28wPgFmAwoh5SXSZuIJJnQzgBqP1AcaA=00`;
@@ -37,7 +37,7 @@ Admin commands:
 - `/password user <user> delete` - remove user from database.
 
 Permissions:
-```
+```MiniYAML
 login.basic:
      description: Allows to use the basic commands
      default: true
