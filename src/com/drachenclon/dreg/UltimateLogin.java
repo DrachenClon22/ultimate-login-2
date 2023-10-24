@@ -15,6 +15,9 @@ import com.drachenclon.dreg.LoggerManager.LoggerCensor;
 import com.drachenclon.dreg.MessageManager.MessageHandler;
 import com.drachenclon.dreg.PlayerManager.PlayerRepo;
 
+/*
+ * Please, be aware that comments may be deprecated
+ */
 public class UltimateLogin extends JavaPlugin {
 	
 	// Picture to draw attention
@@ -28,11 +31,11 @@ public class UltimateLogin extends JavaPlugin {
 	 * (2) Second block contains hashed password+salt (this may not be exactly password+salt
 	 * in this or future versions, but this is the main idea).
 	 * (3) Third block contains raw salt itself, may not be the best approach, but still okay.
-	 * (4) Fourth block contains hashed ip address so user can be joining server without needing to
+	 * (4) Fourth block contains hashed ip+salt address so user can be joining server without needing to
 	 * enter /login command every time. Maybe a variable should be stored and the user wants to type 
 	 * /login every time they join? Who knows.
 	 * (5) Not a block actually, but 2 bytes of info about remaining attempts for user and user config.
-	 * 1st byte is char value of attempts (0-255), 2nd byte is some config, not yet for something (Ver 2.0.0).
+	 * 1st byte is char value of attempts (0-255), 2nd byte is some config, not yet for something (Ver 2.0.1).
 	 * If user ran out of attempts then they get banned and attempts resets back to 0.
 	 * 
 	 * So the scheme of blocks is something like this:
