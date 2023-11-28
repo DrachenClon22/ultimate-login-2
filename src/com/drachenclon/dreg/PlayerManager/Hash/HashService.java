@@ -12,7 +12,8 @@ public final class HashService {
 			try {
 				playerInstance.SetHashInfo(new PlayerHashInfo(hashInfo.GetCurrentHash()));
 			} catch (StringCantBeValidatedException e) {
-				String message = LanguageReader.GetLine("error").replace("{error_num}", "HS0000");
+				String message = LanguageReader.GetLocalizedLine("error", playerInstance.GetPlayer().getLocale())
+						.replace("{error_num}", "HS0000");
 				playerInstance.GetPlayer().kickPlayer(message);
 				e.printStackTrace();
 			}
@@ -33,7 +34,7 @@ public final class HashService {
 	public static boolean CheckAttempts(PlayerHashInfo hashInfo) {
 		int maxAttempts;
 		try {
-			maxAttempts = Integer.parseInt(ConfigReader.GetConfigValue("max-attempts"));
+			maxAttempts = Integer.parseInt(ConfigReader.GetConfigValueRaw("max-attempts"));
 		} catch (Exception e) {
 			maxAttempts = 5;
 		}

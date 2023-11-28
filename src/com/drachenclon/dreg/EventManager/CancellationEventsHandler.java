@@ -15,7 +15,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.drachenclon.dreg.ConfigManager.LanguageReader;
 import com.drachenclon.dreg.MessageManager.MessageHandler;
+import com.drachenclon.dreg.PlayerManager.PlayerInstance;
 import com.drachenclon.dreg.PlayerManager.PlayerRepo;
+import com.drachenclon.dreg.PlayerManager.Hash.PlayerHashInfo;
 import com.drachenclon.dreg.ValidatorManager.Validator;
 
 /**
@@ -26,16 +28,23 @@ public class CancellationEventsHandler implements Listener {
 	
 	private void HandleEvents(PlayerEvent event) {
 		Player player = event.getPlayer();
-		
-		if (PlayerRepo.GetPlayerInstance(player) == null) {
+		PlayerInstance player_instance = PlayerRepo.GetPlayerInstance(player);
+		if (player_instance == null) {
 			return;
 		}
 		
 		if (event instanceof Cancellable) {
 			((Cancellable) event).setCancelled(true);
 		}
-		String message = LanguageReader.GetLine("not_logged_in");
-		MessageHandler.SendMessageFormat(player, message);
+		
+		String message = "";
+		if (player_instance.GetHashInfo() == null) {
+			message = LanguageReader.GetLine("use_register_chat");
+		} else {
+			message = LanguageReader.GetLine("use_login_chat");
+		}
+		MessageHandler.ClearChat(player);
+		MessageHandler.SendMessageWithConfigValue(player, message);
 	}
 	
 	@EventHandler

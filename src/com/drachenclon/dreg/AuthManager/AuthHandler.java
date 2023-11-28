@@ -8,6 +8,7 @@ import com.drachenclon.dreg.Exceptions.StringCantBeValidatedException;
 import com.drachenclon.dreg.FileManager.FileManager;
 import com.drachenclon.dreg.FileManager.FileParser;
 import com.drachenclon.dreg.HashManager.HashBuilder;
+import com.drachenclon.dreg.MessageManager.MessageHandler;
 import com.drachenclon.dreg.PlayerManager.PlayerInstance;
 import com.drachenclon.dreg.PlayerManager.PlayerRepo;
 import com.drachenclon.dreg.PlayerManager.Hash.HashService;
@@ -102,7 +103,17 @@ public final class AuthHandler {
 				hashInfo.ResetAttempts();
 				
 				try {
-					String message = LanguageReader.GetLine("attempts_zero");
+					String locale = "";
+					if (player != null) {
+						locale = player.GetPlayer().getLocale();
+					}
+					
+					String message = LanguageReader.GetLocalizedLine("attempts_zero", locale);
+					message = MessageHandler.GetMessageFormat(message);
+					
+					if (player != null) {
+						player.GetPlayer().kickPlayer(message);
+					}
 					BanHandler.Ban(username, message);
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -27,8 +27,36 @@ public final class ConfigReader {
 	 * @param param value name parameter
 	 * @return String with value of parameter
 	 */
-	public static String GetConfigValue(String param) {
+	public static String GetConfigValueRaw(String param) {
 		return _plugin.getConfig().getString(param);
+	}
+	
+	public static boolean GetConfigValueBoolean(String param) {
+		try {
+			return Boolean.parseBoolean(GetConfigValueRaw(param));
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public static int GetConfigValueInteger(String param) {
+		try {
+			return Integer.parseInt(GetConfigValueRaw(param));
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	
+	/**
+	 * [Not recommended] Get config string from config.yml file
+	 * @param param parameter with message line
+	 * @return String with config value. E.g. return can be: lang.en.helloworld
+	 */
+	// TODO: This should be in lang.yml file, not config.yml
+	@Deprecated
+	public static String GetValueMessage(String param) {
+		
+		return param;
 	}
 	
 	/**
@@ -38,7 +66,31 @@ public final class ConfigReader {
 	 */
 	// TODO: This should be in lang.yml file, not config.yml
 	@Deprecated
-	public static String GetMessage(String param) {
-		return _plugin.getConfig().getString("lang." + GetConfigValue("language") + "." + param);
+	public static String GetLocalizedMessage(String param) {
+		return GetConfigValueRaw("lang." + GetConfigValueRaw("language") + "." + param);
+	}
+	
+	/**
+	 * [Not recommended] Get localized message from config.yml file
+	 * @param param parameter with message line
+	 * @return String with localized message
+	 */
+	// TODO: This should be in lang.yml file, not config.yml
+	@Deprecated
+	public static String GetLocalizedMessage(String param, String locale) {
+		String language = GetConfigValueRaw("language");
+		try {
+			if (Boolean.parseBoolean(GetConfigValueRaw("language-detection"))) {
+				if (_plugin.getConfig().contains("lang." + locale.substring(0, 2))) {
+					language = locale.substring(0, 2);
+					if (_plugin.getConfig().contains("lang." + locale)) {
+						language = locale;
+					}
+				}
+			}
+		} catch (Exception e) {
+			language = GetConfigValueRaw("language");
+		}
+		return GetConfigValueRaw("lang." + language + "." + param);
 	}
 }

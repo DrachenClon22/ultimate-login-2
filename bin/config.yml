@@ -1,31 +1,49 @@
 # Ultimate Login plugin
-# Current version: 2.0.1
+# Current version: 2.1.1
 # Author: DrachenClon22
-# Build Date: 2023.10.05
+# Build Date: 2023.11.28
 
 # Max attempts given to user, after reaching more than max-attempts user gets banned.
 # Attempts can't be more than 255.
 max-attempts: 5
-# Language of all messages that will be displayed.
-# Supported languages: en, ru.
+# Use language of user's game instance to choose language
+language-detection: true
+# Default language to display if user's language not found in config.yml
+# or language-detection disabled
+# Supported languages out of the box: en, ru.
+# You can add your language in lang section
 language: en
 # Minimum length of user password. Cannot be less than 5
 min-pass-length: 5
 # Maximim length of user password. Cannot be more than 255
 max-pass-length: 20
+# Check if password is too weak (beta feature)
+password-complexity-check: true
+# Password complexity settings, do not touch if not sure.
+# Some of the demands will probably frustrate users, but for their own sake
+password-complexity-demand:
+  uppercase: true # A-Z
+  lowercase: true # a-z
+  numbers: true # 0-9
+  non-alpha-numeric: false # #?!@$%^&*-
 
 # Languages. If you want to add your own languages, just add it here in config file as shown below.
+# To add language use full locale form (en_us or en_au), or just locale code like en or ru.
+# Locale priority (en_us for example):
+# en_us (not found) -> en (not found) -> language from config
+
+# Note: please, be aware that language list will be stored in separate file in future versions
 lang:
   en:
     use_register_chat: "&7To register use &6/register <password> <password>"
     use_login_chat: "&7To login use &6/login <password>"
-    attempts_zero: "&cYou've reached max attempts"
+    attempts_zero: "&cMax login attempts reached"
     already_logged: "&7You are already in"
     welcome_back: "&aWelcome back, &6{name}"
     success: "&aSuccessful!"
     should_be_same: "&cPasswords should match!"
     already_registered: "&cYou are already registered. Remaining attempts: &6{attempts}"
-    error: "&4&lUnknown error: {error_num}. Contact admins ASAP"
+    error: "&4&lUnexpected error: {error_num}. Contact admins ASAP"
     wrong_password: "&cWrong password. Remaining attempts: &6{attempts}"
     logged_out: "&cYou have been logged out"
     not_logged_in: "&cYou have to be authorized to do this"
@@ -37,13 +55,15 @@ lang:
     special_symbols_deny: "&cDon't use special characters in your password!"
     password_too_short: "&cPassword is too short!"
     password_too_long: "&cPassword is too long!"
-    user_deleted_success: "&aUser &6{user} &adeleted"
+    password_too_weak: "&cPassword is too weak!"
+    user_deleted_success: "&aUser &6{user} &adeleted from database"
     user_does_not_exist: "&cUser &6{user} &cdoes not exist in database"
     to_set_yourself: "&cTo change your own password, use &7/password change &c command"
+    plugin_reloaded: "&7[UltimateLogin] &6Plugin reloaded"
   ru:
     use_register_chat: "&7Чтобы зарегистрироваться, используй &6/register <пароль> <пароль>"
     use_login_chat: "&7Чтобы войти, используй &6/login <пароль>"
-    attempts_zero: "&cВы превысили количество попыток"
+    attempts_zero: "&cПревышено количество попыток входа"
     already_logged: "&7Вы уже авторизованы"
     welcome_back: "&aС возвращением, &6{name}"
     success: "&aАвторизация успешна"
@@ -61,6 +81,8 @@ lang:
     special_symbols_deny: "&cНе используйте спецсимволы в пароле!"
     password_too_short: "&cСлишком короткий пароль!"
     password_too_long: "&cСлишком длинный пароль!"
-    user_deleted_success: "&aUser &6{user} &adeleted"
-    user_does_not_exist: "&cUser &6{user} &cdoes not exist in database"
-    to_set_yourself: "&cTo change your own password, use &7/password change &c command"
+    password_too_weak: "&cПароль слишком простой!"
+    user_deleted_success: "&aИгрок &6{user} &aудален из базы паролей"
+    user_does_not_exist: "&cИгрок &6{user} &cне зарегистрирован"
+    to_set_yourself: "&cЧтобы изменить свой пароль, используй &7/password change"
+    plugin_reloaded: "&7[UltimateLogin] &6Плагин перезагружен"

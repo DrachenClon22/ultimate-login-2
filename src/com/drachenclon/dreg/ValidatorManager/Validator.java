@@ -1,12 +1,15 @@
 package com.drachenclon.dreg.ValidatorManager;
 
+import java.util.regex.Pattern;
+
 import com.drachenclon.dreg.ConfigManager.ConfigReader;
 import com.drachenclon.dreg.ConfigManager.LanguageReader;
 import com.drachenclon.dreg.HashManager.HashBuilder;
 
 public final class Validator {
 	
-	private static final String PROHIBITED_CHARS_FOR_PASSWORD = "\\|/'\"\' ";
+	//private static final String PROHIBITED_CHARS_FOR_PASSWORD = "\\|/'\"\' ";
+	private static final String PROHIBITED_CHARS_FOR_PASSWORD = " ";
 	
 	public static boolean TryValidateHash(String hash) {
 		if (hash == null) {
@@ -25,32 +28,65 @@ public final class Validator {
 		String message = "";
 		String password = "";
 		
-		if (!args[0].equals(args[1])) {
-			message = LanguageReader.GetLine("should_be_same");
-			return new ValidationResult(message, false);
-		}
-		
-		password = args[0];
-		
-		if (!Validator.DoesStringContain(password)) {
-			message = LanguageReader.GetLine("special_symbols_deny");
-			return new ValidationResult(message, false);
-		}
-		
-		int minLength = Integer.parseInt(ConfigReader.GetConfigValue("min-pass-length"));
-		minLength = minLength < 5 ? 5 : minLength;
-		
-		if (password.length() < minLength) {
-			message = LanguageReader.GetLine("password_too_short");
-			return new ValidationResult(message, false);
-		}
-		
-		int maxLength = Integer.parseInt(ConfigReader.GetConfigValue("max-pass-length"));
-		maxLength = maxLength > 255 ? 255 : maxLength;
-		
-		if (password.length() > maxLength) {
-			message = LanguageReader.GetLine("password_too_long");
-			return new ValidationResult(message, false);
+		try {
+			if (!args[0].equals(args[1])) {
+				message = LanguageReader.GetLine("should_be_same");
+				return new ValidationResult(message, false);
+			}
+			
+			password = args[0];
+			
+			if (!Validator.DoesStringContain(password)) {
+				message = LanguageReader.GetLine("special_symbols_deny");
+				return new ValidationResult(message, false);
+			}
+			
+			int minLength = ConfigReader.GetConfigValueInteger("min-pass-length");
+			minLength = minLength < 5 ? 5 : minLength;
+			
+			if (password.length() < minLength) {
+				message = LanguageReader.GetLine("password_too_short");
+				return new ValidationResult(message, false);
+			}
+			
+			int maxLength = ConfigReader.GetConfigValueInteger("max-pass-length");
+			maxLength = maxLength > 255 ? 255 : maxLength;
+			
+			if (password.length() > maxLength) {
+				message = LanguageReader.GetLine("password_too_long");
+				return new ValidationResult(message, false);
+			}
+			
+			if (ConfigReader.GetConfigValueBoolean("password-complexity-check")) {
+				String searchLine = "password-complexity-demand";
+				String regexLine = "";
+				boolean uppercase = ConfigReader.GetConfigValueBoolean(searchLine+".uppercase");
+				boolean lowercase = ConfigReader.GetConfigValueBoolean(searchLine+".lowercase");
+				boolean numbers = ConfigReader.GetConfigValueBoolean(searchLine+".numbers");
+				boolean non_alpha = ConfigReader.GetConfigValueBoolean(searchLine+".non-alpha-numeric");
+				
+				if (uppercase) {
+					regexLine += "(?=.*?[A-Z])";
+				}
+				if (lowercase) {
+					regexLine += "(?=.*?[a-z])";
+				}
+				if (numbers) {
+					regexLine += "(?=.*?[0-9])";
+				}
+				if (non_alpha) {
+					regexLine += "(?=.*?[#?!@$%^&*-])";
+				}
+				boolean isMatch = Pattern.compile(regexLine)
+			               .matcher(password)
+			               .find();
+				if (!isMatch) {
+					message = LanguageReader.GetLine("password_too_weak");
+					return new ValidationResult(message, false);
+				}
+			}
+		} catch (Exception e) {
+			return new ValidationResult(e.getMessage(), false, "VALID-0001");
 		}
 		
 		return new ValidationResult(null, true);

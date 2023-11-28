@@ -89,7 +89,7 @@ public class UltimateLogin extends JavaPlugin {
 		// Register command handlers
 		this.getCommand("register").setExecutor(new RegisterCommand());
 		this.getCommand("login").setExecutor(new LoginCommand());
-		this.getCommand("password").setExecutor(new PasswordCommand());
+		this.getCommand("password").setExecutor(new PasswordCommand(this));
 		
 		// Add all players to unauth list on startup
 		PlayerRepo.AddAllPlayers();

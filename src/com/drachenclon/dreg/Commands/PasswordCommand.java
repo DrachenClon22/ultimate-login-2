@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.drachenclon.dreg.UltimateLogin;
 import com.drachenclon.dreg.AuthManager.AuthHandler;
 import com.drachenclon.dreg.BanManager.BanHandler;
 import com.drachenclon.dreg.ConfigManager.LanguageReader;
@@ -30,6 +31,12 @@ import com.drachenclon.dreg.ValidatorManager.Validator;
 */ 
 public class PasswordCommand implements CommandExecutor {
 	
+	UltimateLogin _plugin;
+	
+	public PasswordCommand(UltimateLogin plugin) {
+		_plugin = plugin;
+	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
@@ -41,13 +48,26 @@ public class PasswordCommand implements CommandExecutor {
 		
 		if (!cmd.testPermission(sender)) {
 			message = LanguageReader.GetLine("no_permission");
-			MessageHandler.SendMessageFormat(player, message);
+			MessageHandler.SendMessageWithConfigValue(player, message);
 			return true;
 		}
 		
 		if (args.length > 0) {
 			try {
 				switch (args[0]) {
+				case ("reload"): {
+					_plugin.reloadConfig();
+					message = LanguageReader.GetLine("plugin_reloaded");
+
+					if (player != null) {
+						MessageHandler.SendMessageWithConfigValue(player, message);
+					} else {
+						sender.sendMessage(
+								MessageHandler.GetMessageFormat(LanguageReader.GetLocalizedLine(message)));
+					}
+					
+					return true;
+				}
 				case ("logout"): {
 					if (player != null) {
 						AuthHandler.Logout(player, false);
@@ -56,7 +76,7 @@ public class PasswordCommand implements CommandExecutor {
 					}
 
 					message = LanguageReader.GetLine("logged_out");
-					MessageHandler.SendMessageFormat(player, message);
+					MessageHandler.SendMessageWithConfigValue(player, message);
 					return true;
 				}
 				case ("change"): {
@@ -77,7 +97,7 @@ public class PasswordCommand implements CommandExecutor {
 							message = result.Message;
 						}
 						
-						MessageHandler.SendMessageFormat((Player)sender, message);
+						MessageHandler.SendMessageWithConfigValue((Player)sender, message);
 						return true;
 					} else {
 						System.out.println("Command cannot be used from console");
@@ -93,14 +113,14 @@ public class PasswordCommand implements CommandExecutor {
 						if (!sender.hasPermission("login.set.other") ||
 								(isTargetOp && !sender.hasPermission("login.set.admin"))) {
 							message = LanguageReader.GetLine("no_permission");
-							MessageHandler.SendMessageFormat((Player)sender, message);
+							MessageHandler.SendMessageWithConfigValue((Player)sender, message);
 							return true;
 						}
 						
 						if (sender instanceof Player) {
 							if (((Player)sender).getName().equals(args[1])) {
 								message = LanguageReader.GetLine("to_set_yourself");
-								MessageHandler.SendMessageFormat((Player)sender, message);
+								MessageHandler.SendMessageWithConfigValue((Player)sender, message);
 								return true;
 							}
 						}
@@ -112,7 +132,7 @@ public class PasswordCommand implements CommandExecutor {
 						} catch (StringCantBeValidatedException e) {
 							message = LanguageReader.GetLine("user_does_not_exist")
 									.replace("{user}", args[1]);;
-							MessageHandler.SendMessageFormat((Player)sender, message);
+							MessageHandler.SendMessageWithConfigValue((Player)sender, message);
 							return true;
 						}
 						
@@ -129,7 +149,7 @@ public class PasswordCommand implements CommandExecutor {
 							message = result.Message;
 						}
 						
-						MessageHandler.SendMessageFormat((Player)sender, message);
+						MessageHandler.SendMessageWithConfigValue((Player)sender, message);
 						return true;
 					}
 					case ("delete"): {
@@ -137,21 +157,26 @@ public class PasswordCommand implements CommandExecutor {
 							String hash = FileParser.GetPlayerInfo(args[1]);
 							if (hash != null) {
 								FileManager.TryDeleteFromFile(hash);
-								message = LanguageReader.GetLine("user_deleted_success")
-										.replace("{user}", args[1]);
+								message = LanguageReader.GetLine("user_deleted_success");
 							} else {
-								message = LanguageReader.GetLine("user_does_not_exist")
-										.replace("{user}", args[1]);
+								message = LanguageReader.GetLine("user_does_not_exist");
 							}
 						} else {
 							message = LanguageReader.GetLine("no_permission");
 						}
-						MessageHandler.SendMessageFormat((Player)sender, message);
+						if (player != null) {
+							MessageHandler.SendMessageWithConfigValue(player, message);
+						} else {
+							sender.sendMessage(
+									MessageHandler.GetMessageFormat(LanguageReader.GetLocalizedLine(message))
+									.replace("{user}", args[1])
+									);
+						}
 						
 						Player target = PlayerRepo.GetPlayer(args[1]);
 						if (target != null) {
-							message = LanguageReader.GetLine("logged_out");
-							BanHandler.Kick(target, message);
+							message = LanguageReader.GetLocalizedLine(LanguageReader.GetLine("logged_out"), target.getLocale());
+							BanHandler.Kick(target, MessageHandler.GetMessageFormat(message));
 						}
 						
 						return true;
@@ -163,13 +188,13 @@ public class PasswordCommand implements CommandExecutor {
 			}
 			catch (IndexOutOfBoundsException e) {
 				if (sender instanceof Player) {
-					MessageHandler.SendMessageFormat((Player)sender, LanguageReader.GetLine("specify_args"));
+					MessageHandler.SendMessageWithConfigValue((Player)sender, LanguageReader.GetLine("specify_args"));
 				}
 			}
 			catch (Exception e) {
 				if (sender instanceof Player) {
-					MessageHandler.SendMessageFormat((Player)sender, LanguageReader.GetLine("error")
-							.replace("{error_num}", "DE0001"));
+					MessageHandler.SendErrorMessage((Player)sender, "error", "DE0001");
+					return true;
 				}
 				e.printStackTrace();
 			}

@@ -1,13 +1,17 @@
 package com.drachenclon.dreg.PlayerManager;
 
+import java.io.Console;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.drachenclon.dreg.UltimateLogin;
@@ -114,7 +118,7 @@ public final class PlayerRepo implements Listener {
 			
 			if (AuthHandler.TryAuthWithIp(player)) {
 				RemovePlayer(player);
-				message = LanguageReader.GetLine("welcome_back").replace("{name}", player.getName());
+				message = LanguageReader.GetLine("welcome_back");
 			} else {
 				PlayerHashInfo hash = GetPlayerInstance(player).GetHashInfo();
 				if (hash == null) {
@@ -123,8 +127,15 @@ public final class PlayerRepo implements Listener {
 					message = LanguageReader.GetLine("use_login_chat");
 				}
 			}
+			MessageHandler.ClearChat(player);
 			
-			MessageHandler.SendMessageFormat(player, message);
+			final String msg = message;	
+			Bukkit.getScheduler().runTaskLater(_plugin, new Runnable() {
+				  @Override
+				  public void run() {
+					  MessageHandler.SendMessageWithConfigValue(player, msg);
+				  }
+				}, 10L);
 		}
     }
 	

@@ -30,34 +30,37 @@ public class LoginCommand implements CommandExecutor {
 			
 			if (!cmd.testPermission(sender)) {
 				message = LanguageReader.GetLine("no_permission");
-				MessageHandler.SendMessageFormat(player, message);
+				MessageHandler.SendMessageWithConfigValue(player, message);
 				return true;
 			}
 			
 			if (PlayerRepo.GetPlayerInstance(player) == null) {
 				message = LanguageReader.GetLine("already_logged");
-				MessageHandler.SendMessageFormat(player, message);
+				MessageHandler.SendMessageWithConfigValue(player, message);
 				return true;
 			}
 			
 			PlayerHashInfo hash = PlayerRepo.GetPlayerInstance(player).GetHashInfo();
 			if (args.length > 0) {
 				if (AuthHandler.TryAuthWithPassword(player, args[0])) {
-					message = LanguageReader.GetLine("welcome_back").replace("{name}", player.getName());
+					message = LanguageReader.GetLine("welcome_back");
 					PlayerRepo.RemovePlayer(player);
 				} else {	
 					if (hash == null) {
 						message = LanguageReader.GetLine("use_register_chat");
 					} else {
-						int maxAttempts = Integer.parseInt(ConfigReader.GetConfigValue("max-attempts"));
+						int maxAttempts = Integer.parseInt(ConfigReader.GetConfigValueRaw("max-attempts"));
 						int attempts = maxAttempts - hash.GetCurrentAttempts();
 						
-						message = LanguageReader.GetLine("wrong_password").replace("{attempts}", 
+						message = LanguageReader.GetLocalizedLine("wrong_password", player.getLocale()).replace("{attempts}", 
 								String.valueOf(attempts));
+						
+						MessageHandler.SendMessageWithFormat(player, message);
+						return true;
 					}
 				}
 				
-				MessageHandler.SendMessageFormat(player, message);
+				MessageHandler.SendMessageWithConfigValue(player, message);
 				return true;
 			}
 			

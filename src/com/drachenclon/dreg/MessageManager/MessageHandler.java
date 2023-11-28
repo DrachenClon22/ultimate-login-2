@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.drachenclon.dreg.UltimateLogin;
+import com.drachenclon.dreg.ConfigManager.LanguageReader;
 import com.drachenclon.dreg.Exceptions.NoPluginException;
 
 /**
@@ -28,12 +29,32 @@ public final class MessageHandler {
 	}
 	
 	/**
-	 * Sends message to player in formatted style.
+	 * Sends message to player with config value.
 	 * @param player is the player that should receive message
-	 * @param message text that should be sent to player
+	 * @param text config value
 	 * @see {@link #BroadcastFormat(String)}
 	 */
-	public static void SendMessageFormat(Player player, String message) {
+	public static void SendMessageWithConfigValue(Player player, String message) {
+		if (player != null) {
+			String msg = LanguageReader.GetLocalizedLine(message, player.getLocale());
+			if (msg != null) {
+				player.sendMessage(GetMessageFormat(msg
+						.replace("{name}", player.getName())));
+			}
+		}
+	}
+	
+	public static void SendErrorMessage(Player player, String message, String error) {
+		if (player != null) {
+			String msg = LanguageReader.GetLocalizedLine(message, player.getLocale());
+			if (msg != null) {
+				player.sendMessage(GetMessageFormat(msg
+						.replace("{error_num}", error)));
+			}
+		}
+	}
+	
+	public static void SendMessageWithFormat(Player player, String message) {
 		if (player != null) {
 			player.sendMessage(GetMessageFormat(message));
 		}
@@ -53,7 +74,7 @@ public final class MessageHandler {
 			throw new NoPluginException("Main plugin variable is null. Use init(plugin).");
 		}
 		for(Player pl : _plugin.getServer().getOnlinePlayers()) {
-			SendMessageFormat(pl, message);
+			SendMessageWithFormat(pl, message);
 		}
 	}
 	/**
@@ -75,12 +96,20 @@ public final class MessageHandler {
 		}
 		for(Player pl : _plugin.getServer().getOnlinePlayers()) {
 			if (pl.isOp()) {
-				SendMessageFormat(pl, message);
+				SendMessageWithFormat(pl, message);
 			}
 		}
 	}
 	
-	private static String GetMessageFormat(String message) {
+	public static void ClearChat(Player player) {
+		if (player != null) {
+			for (int i = 0; i < 20; i++) {
+				player.sendMessage("");
+			}
+		}
+	}
+	
+	public static String GetMessageFormat(String message) {
 		return ChatColor.translateAlternateColorCodes('&', message);
 	}
 }

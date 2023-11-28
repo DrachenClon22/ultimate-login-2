@@ -31,13 +31,13 @@ public class RegisterCommand implements CommandExecutor {
 			
 			if (!cmd.testPermission(sender)) {
 				message = LanguageReader.GetLine("no_permission");
-				MessageHandler.SendMessageFormat(player, message);
+				MessageHandler.SendMessageWithConfigValue(player, message);
 				return true;
 			}
 			
 			if (PlayerRepo.GetPlayerInstance(player) == null) {
 				message = LanguageReader.GetLine("already_logged");
-				MessageHandler.SendMessageFormat(player, message);
+				MessageHandler.SendMessageWithConfigValue(player, message);
 				return true;
 			}
 			
@@ -51,18 +51,26 @@ public class RegisterCommand implements CommandExecutor {
 					} else {
 						PlayerHashInfo hash = PlayerRepo.GetPlayerInstance(player).GetHashInfo();
 						if (hash != null) {
-							int maxAttempts = Integer.parseInt(ConfigReader.GetConfigValue("max-attempts"));
-							message = LanguageReader.GetLine("already_registered").replace("{attempts}", 
+							int maxAttempts = Integer.parseInt(ConfigReader.GetConfigValueRaw("max-attempts"));
+							message = LanguageReader.GetLocalizedLine("already_registered", player.getLocale()).replace("{attempts}", 
 									String.valueOf(maxAttempts - hash.GetCurrentAttempts() + 1));
+							MessageHandler.SendMessageWithFormat(player, message);
+							
+							return true;
 						} else {
 							message = LanguageReader.GetLine("specify_args");
 						}
 					}
 				} else {
 					message = result.Message;
+					
+					if (result.ErrorCode != null) {
+						MessageHandler.SendErrorMessage(player, "error", "ERRCODE: " + result.ErrorCode + "; " + message);
+						return true;
+					}
 				}
 				
-				MessageHandler.SendMessageFormat(player, message);
+				MessageHandler.SendMessageWithConfigValue(player, message);
 				
 				return true;
 			}
