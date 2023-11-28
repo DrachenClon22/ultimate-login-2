@@ -56,17 +56,21 @@ public class PasswordCommand implements CommandExecutor {
 			try {
 				switch (args[0]) {
 				case ("reload"): {
-					_plugin.reloadConfig();
-					message = LanguageReader.GetLine("plugin_reloaded");
+					if (sender.hasPermission("login.*")) {
+						_plugin.reloadConfig();
+						message = LanguageReader.GetLine("plugin_reloaded");
 
-					if (player != null) {
-						MessageHandler.SendMessageWithConfigValue(player, message);
+						if (player != null) {
+							MessageHandler.SendMessageWithConfigValue(player, message);
+						} else {
+							sender.sendMessage(
+									MessageHandler.GetMessageFormat(LanguageReader.GetLocalizedLine(message)));
+						}
+						
+						return true;
 					} else {
-						sender.sendMessage(
-								MessageHandler.GetMessageFormat(LanguageReader.GetLocalizedLine(message)));
+						message = LanguageReader.GetLine("no_permission");
 					}
-					
-					return true;
 				}
 				case ("logout"): {
 					if (player != null) {
