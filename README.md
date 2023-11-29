@@ -19,7 +19,7 @@ Features:
 - User information saved inside file, so no need to enter password every time they join, only if suspicious activity spotted;
 - If user ran of of their attempts, user gets permanently banned, until admins manually pardon them;
 - Password complexity check;
-- Dynamic language support;
+- Dynamic language support.
 
 Minecraft bukkit plugin for user authorization in cases:
 1. Need additional protection for players or administration even on online servers;
