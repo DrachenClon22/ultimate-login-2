@@ -1,1 +1,4 @@
 classes/
+.settings/
+.idea/
+UltimateLogin2.iml
