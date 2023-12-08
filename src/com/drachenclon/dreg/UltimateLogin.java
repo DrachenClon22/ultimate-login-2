@@ -1,5 +1,7 @@
 package com.drachenclon.dreg;
 
+import com.drachenclon.dreg.VersionHandler.Version;
+import com.drachenclon.dreg.VersionHandler.VersionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -14,6 +16,8 @@ import com.drachenclon.dreg.HashManager.HashBuilders.SHA256Builder;
 import com.drachenclon.dreg.LoggerManager.LoggerCensor;
 import com.drachenclon.dreg.MessageManager.MessageHandler;
 import com.drachenclon.dreg.PlayerManager.PlayerRepo;
+
+import java.util.logging.Level;
 
 /*
  * Please, be aware that comments may be deprecated
@@ -61,6 +65,7 @@ public class UltimateLogin extends JavaPlugin {
 			FileBuilder.init(getDataFolder(), "accounts");
 			HashBuilder.init(new SHA256Builder());
 			PlayerRepo.init(this);
+			VersionManager.init(this);
 		} catch (Exception e) {
 			/*
 			 * If something went wrong during startup, all op players will receive the message.
@@ -77,7 +82,20 @@ public class UltimateLogin extends JavaPlugin {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
-		
+
+		try {
+			if (VersionManager.checkVersion()) {
+				this.getLogger().log(Level.INFO,
+						"You are using the latest version!");
+			} else {
+				this.getLogger().log(Level.WARNING,
+						"Newest version " + VersionManager.getCurrentVersionFromNet() + " available! Download at https://www.spigotmc.org/resources/ultimate-login.112969/ or https://github.com/DrachenClon22/ultimate-login-2/releases");
+			}
+		} catch (Exception e) {
+			this.getLogger().log(Level.WARNING,
+					"Cannot check for latest version. Probably offline?");
+		}
+
 		/*
 		 * Register listeners
 		 * PlayerRepo listens for players joining and quitting events so they can be added
