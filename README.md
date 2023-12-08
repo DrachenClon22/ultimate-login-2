@@ -1,6 +1,6 @@
 # Minecraft Ultimate Login 2 plugin
 
-- UltimateLogin 2.1.0
+- UltimateLogin 2.2.0
 - Target Version: 1.20+
 - Author: DrachenClon22
 - Supported Languages: English, Russian
