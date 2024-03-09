@@ -135,7 +135,7 @@ public class PasswordCommand implements CommandExecutor {
 							hash = new PlayerHashInfo(FileParser.GetPlayerInfo(args[1]));
 						} catch (StringCantBeValidatedException e) {
 							message = LanguageReader.GetLine("user_does_not_exist")
-									.replace("{user}", args[1]);;
+									.replace("{user}", args[1]);
 							MessageHandler.SendMessageWithConfigValue((Player)sender, message);
 							return true;
 						}
@@ -152,8 +152,16 @@ public class PasswordCommand implements CommandExecutor {
 						} else {
 							message = result.Message;
 						}
-						
-						MessageHandler.SendMessageWithConfigValue((Player)sender, message);
+
+						// Maybe send message at the end of the switch? Anyway there should be any kind of message
+						if (sender instanceof Player) {
+							MessageHandler.SendMessageWithConfigValue((Player)sender, message);
+						} else {
+							sender.sendMessage(
+									MessageHandler.GetMessageFormat(LanguageReader.GetLocalizedLine(message))
+											.replace("{user}", args[1])
+							);
+						}
 						return true;
 					}
 					case ("delete"): {
