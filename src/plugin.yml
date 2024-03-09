@@ -1,7 +1,7 @@
 # Plugin to login on servers. Can be used for online servers if admins have paranoia or needed any kind of additional protection. Perfect solution for offline servers because plugin does not require to enter password every time user logs in. All users' data stored in encrypted format, if any people see account file they can't decode it back.
 
 name: UltimateLogin
-version: 2.2.0
+version: 2.2.1
 author: DrachenClon22
 description: Ultimate login plugin for paranoia admins or offline servers.
 
