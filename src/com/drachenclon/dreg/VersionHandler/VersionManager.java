@@ -1,13 +1,10 @@
 package com.drachenclon.dreg.VersionHandler;
 
 import com.drachenclon.dreg.UltimateLogin;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.jsoup.Jsoup;
-
-import java.io.IOException;
 
 public final class VersionManager {
     private static UltimateLogin _plugin;

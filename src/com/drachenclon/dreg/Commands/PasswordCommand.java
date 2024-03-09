@@ -154,12 +154,13 @@ public class PasswordCommand implements CommandExecutor {
 						}
 
 						// Maybe send message at the end of the switch? Anyway there should be any kind of message
+						// why message here is config raw value and not an actual message???
 						if (sender instanceof Player) {
 							MessageHandler.SendMessageWithConfigValue((Player)sender, message);
 						} else {
 							sender.sendMessage(
 									MessageHandler.GetMessageFormat(LanguageReader.GetLocalizedLine(message))
-											.replace("{user}", args[1])
+											.replace("{changed_player}", args[1])
 							);
 						}
 						return true;
