@@ -23,7 +23,7 @@ public class LoggerCensor {
 	private static final String[] SILENT_COMMANDS = {
 			"/login",
 			"/register",
-			"/password"
+			//	"/password"
 	};
 	
 	/*

@@ -1,5 +1,6 @@
 package com.drachenclon.dreg;
 
+import com.drachenclon.dreg.Commands.TabCompleter.NoTabCompleter;
 import com.drachenclon.dreg.VersionHandler.Version;
 import com.drachenclon.dreg.VersionHandler.VersionManager;
 import org.bukkit.Bukkit;
@@ -104,10 +105,7 @@ public class UltimateLogin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new PlayerRepo(), this);
 		getServer().getPluginManager().registerEvents(new CancellationEventsHandler(), this);
 		
-		// Register command handlers
-		this.getCommand("register").setExecutor(new RegisterCommand());
-		this.getCommand("login").setExecutor(new LoginCommand());
-		this.getCommand("password").setExecutor(new PasswordCommand(this));
+		RegisterCommands();
 		
 		// Add all players to unauth list on startup
 		PlayerRepo.AddAllPlayers();
@@ -117,9 +115,20 @@ public class UltimateLogin extends JavaPlugin {
 	public void onDisable() {
 		/* 
 		 * Always remove all players from repo when shutting down or reloading plugin or server
-		 * or else there can be some players that shoudn't have access to server but still have it.
+		 * or else there can be some players that shouldn't have access to server but still have it.
 		 * Or in other words not removing all players from list may cause bugs.
 		 */
 		PlayerRepo.RemoveAllPlayers();
+	}
+
+	public void RegisterCommands() {
+		this.getCommand("register").setExecutor(new RegisterCommand());
+		this.getCommand("register").setTabCompleter(NoTabCompleter.INSTANCE);
+
+		this.getCommand("login").setExecutor(new LoginCommand());
+		this.getCommand("login").setTabCompleter(NoTabCompleter.INSTANCE);
+
+		this.getCommand("password").setExecutor(new PasswordCommand(this));
+		this.getCommand("password").setTabCompleter(NoTabCompleter.INSTANCE);
 	}
 }

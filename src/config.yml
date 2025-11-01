@@ -1,7 +1,6 @@
 # Ultimate Login plugin
 # Current version: 2.2.0
 # Author: DrachenClon22
-# Build Date: 2023.12.08
 
 # Max attempts given to user, after reaching more than max-attempts user gets banned.
 # Attempts can't be more than 255.

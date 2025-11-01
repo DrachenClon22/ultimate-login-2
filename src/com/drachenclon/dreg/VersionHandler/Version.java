@@ -16,17 +16,34 @@ public final class Version implements Comparable<Version> {
     }
 
     public Version(String version) {
-        Integer[] ver = null;
+        int major = 0, minor = 0, patch = 0;
+
         try {
-            version = version.replaceAll("[^\\d.]", "");
-            ver = Arrays.stream(version.split("\\.")).map(x->Integer.parseInt(x)).toArray(size->new Integer[size]);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        _major = ver != null ? ver[0] : 0;
-        _minor = ver != null ? ver[1] : 0;
-        _patch = ver != null ? ver[2] : 0;
+            if (version != null && !version.isEmpty()) {
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\d+").matcher(version);
+                int[] parts = {0, 0, 0};
+                int i = 0;
+
+                while (m.find() && i < 3) {
+                    try {
+                        parts[i] = Integer.parseInt(m.group());
+                    } catch (NumberFormatException e) {
+                        parts[i] = Integer.MAX_VALUE;
+                    }
+                    i++;
+                }
+
+                major = parts[0];
+                minor = parts[1];
+                patch = parts[2];
+            }
+        } catch (Exception ignored) {}
+
+        this._major = major;
+        this._minor = minor;
+        this._patch = patch;
     }
+
     @Override
     public int compareTo(Version ver) {
         int maj = Integer.compare(_major, ver._major);

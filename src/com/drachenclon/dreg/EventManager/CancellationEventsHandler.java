@@ -1,86 +1,227 @@
 package com.drachenclon.dreg.EventManager;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerHarvestBlockEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemDamageEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-
 import com.drachenclon.dreg.ConfigManager.LanguageReader;
 import com.drachenclon.dreg.MessageManager.MessageHandler;
 import com.drachenclon.dreg.PlayerManager.PlayerInstance;
 import com.drachenclon.dreg.PlayerManager.PlayerRepo;
-import com.drachenclon.dreg.PlayerManager.Hash.PlayerHashInfo;
 import com.drachenclon.dreg.ValidatorManager.Validator;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.*;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.projectiles.ProjectileSource;
 
-/**
- * Class contains all events that should be cancelled if player
- * is not registered or logged in.
- */
+import java.util.Arrays;
+
 public class CancellationEventsHandler implements Listener {
-	
-	private void HandleEvents(PlayerEvent event) {
-		Player player = event.getPlayer();
-		PlayerInstance player_instance = PlayerRepo.GetPlayerInstance(player);
-		if (player_instance == null) {
+
+	private static final String[] ALLOWED_CMDS = new String[]{ //"/l", "/reg"
+			"/login",
+			"/register"
+	};
+
+	private boolean shouldProtect(Player player) {
+		if (player == null) return false;
+		PlayerInstance inst = PlayerRepo.GetPlayerInstance(player);
+		return inst != null;
+	}
+
+	private void messagePlayerToAuth(Player player) {
+		if (player == null) return;
+		String msg = (PlayerRepo.GetPlayerInstance(player).GetHashInfo() == null)
+				? LanguageReader.GetLine("use_register_chat")
+				: LanguageReader.GetLine("use_login_chat");
+		MessageHandler.ClearChat(player);
+		MessageHandler.SendMessageWithConfigValue(player, msg);
+	}
+
+	private void handlePlayerEvent(Event event, Player player) {
+		if (!shouldProtect(player)) return;
+		if (event instanceof Cancellable c) c.setCancelled(true);
+		messagePlayerToAuth(player);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPlayerMove(PlayerMoveEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPlayerChat(AsyncPlayerChatEvent event) {
+		String msg = event.getMessage().toLowerCase();
+		if (Validator.StringContainsAny(msg, new String[]{"/login", "/register"})) return;
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPlayerInteract(PlayerInteractEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPlayerInteractEntity(PlayerInteractEntityEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnSwapHands(PlayerSwapHandItemsEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnItemHeld(PlayerItemHeldEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnItemConsume(PlayerItemConsumeEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnEditBook(PlayerEditBookEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnBedEnter(PlayerBedEnterEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnBucket(PlayerBucketEmptyEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnBucket(PlayerBucketFillEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnHarvest(PlayerHarvestBlockEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnBlockBreak(BlockBreakEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnBlockPlace(BlockPlaceEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPlayerItemDamage(PlayerItemDamageEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPlayerDropItem(PlayerDropItemEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnInventoryClick(InventoryClickEvent event) {
+		if (!(event.getWhoClicked() instanceof Player p)) return;
+		handlePlayerEvent(event, p);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnInventoryDrag(InventoryDragEvent event) {
+		if (!(event.getWhoClicked() instanceof Player p)) return;
+		handlePlayerEvent(event, p);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnInventoryOpen(InventoryOpenEvent event) {
+		if (!(event.getPlayer() instanceof Player p)) return;
+		handlePlayerEvent(event, p);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnTeleport(PlayerTeleportEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPortal(PlayerPortalEvent event) {
+		handlePlayerEvent(event, event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPlayerCommand(PlayerCommandPreprocessEvent event) {
+		Player p = event.getPlayer();
+		if (!shouldProtect(p)) return;
+		String msg = event.getMessage().toLowerCase();
+		boolean allowed = Arrays.stream(ALLOWED_CMDS).anyMatch(cmd -> msg.startsWith(cmd + " ") || msg.equals(cmd));
+		if (allowed) return;
+		event.setCancelled(true);
+		messagePlayerToAuth(p);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnAnyDamage(EntityDamageEvent event) {
+		if (!(event.getEntity() instanceof Player p)) return;
+		if (!shouldProtect(p)) return;
+		event.setCancelled(true);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnDamageByEntity(EntityDamageByEntityEvent event) {
+		Entity victim = event.getEntity();
+		if (victim instanceof Player p && shouldProtect(p)) {
+			event.setCancelled(true);
 			return;
 		}
-		
-		if (event instanceof Cancellable) {
-			((Cancellable) event).setCancelled(true);
+		Entity damager = event.getDamager();
+		Player attacker = null;
+		if (damager instanceof Player) attacker = (Player) damager;
+		else if (damager instanceof org.bukkit.entity.Projectile proj) {
+			ProjectileSource src = proj.getShooter();
+			if (src instanceof Player pl) attacker = pl;
 		}
-		
-		String message = "";
-		if (player_instance.GetHashInfo() == null) {
-			message = LanguageReader.GetLine("use_register_chat");
-		} else {
-			message = LanguageReader.GetLine("use_login_chat");
-		}
-		MessageHandler.ClearChat(player);
-		MessageHandler.SendMessageWithConfigValue(player, message);
-	}
-	
-	@EventHandler
-	public void OnPlayerMove(PlayerMoveEvent event) {
-		HandleEvents(event);
-	}
-	
-	@EventHandler
-	public void OnPlayerCommand(PlayerCommandPreprocessEvent event) {
-		if (!Validator.StringContainsAny(event.getMessage(), new String[] { "/login", "/register" })) {
-			HandleEvents(event);
+		if (attacker != null && shouldProtect(attacker)) {
+			event.setCancelled(true);
 		}
 	}
-	
-	@EventHandler
-	public void OnPlayerChat(AsyncPlayerChatEvent event) {
-		HandleEvents(event);
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnTarget(EntityTargetEvent event) {
+		if (event.getTarget() instanceof Player p && shouldProtect(p)) {
+			event.setCancelled(true);
+		}
 	}
-	
-	@EventHandler
-	public void OnPlayerInteract(PlayerInteractEvent event) {
-		HandleEvents(event);
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnTargetLiving(EntityTargetLivingEntityEvent event) {
+		if (event.getTarget() instanceof Player p && shouldProtect(p)) {
+			event.setCancelled(true);
+		}
 	}
-	
-	@EventHandler
-	public void OnPlayerBreak(PlayerHarvestBlockEvent event) {
-		HandleEvents(event);
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnFood(FoodLevelChangeEvent event) {
+		if (!(event.getEntity() instanceof Player p)) return;
+		if (!shouldProtect(p)) return;
+		event.setCancelled(true);
 	}
-	
-	@EventHandler
-	public void OnPlayerDamage(PlayerItemDamageEvent event) {
-		HandleEvents(event);
-	}
-	
-	@EventHandler
-	public void OnPlayerDropItem(PlayerDropItemEvent event) {
-		HandleEvents(event);
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void OnPotionSplash(PotionSplashEvent event) {
+		event.getAffectedEntities().removeIf(e -> e instanceof Player p && shouldProtect(p));
 	}
 }
