@@ -26,7 +26,7 @@ import java.util.logging.Level;
 public class UltimateLogin extends JavaPlugin {
 	
 	// Picture to draw attention
-	public static final String SALT = "89bc1dde7cd2d573139223e0c4dc55bed48ddc42c61a8e57c0e6aa63f4540fb2";
+	public static final String SALT = "89bc122e3cd2d573139223e0c4dc55b2d48ddc42c61a8e57c0e6ab63f4540fb2";
 	
 	/*
 	 * All Hash info about players stores in a file and separated on 5 different blocks of
@@ -52,13 +52,33 @@ public class UltimateLogin extends JavaPlugin {
 			getDataFolder().mkdir();
 		}
 		saveDefaultConfig();
+
+		InitAllManagers();
+		CheckPluginVersion();
+		AddEventListeners();
+		RegisterCommands();
 		
+		// Add all players to unauth list on startup
+		PlayerRepo.AddAllPlayers();
+	}
+	
+	@Override
+	public void onDisable() {
+		/* 
+		 * Always remove all players from repo when shutting down or reloading plugin or server
+		 * or else there can be some players that shouldn't have access to server but still have it.
+		 * Or in other words not removing all players from list may cause bugs.
+		 */
+		PlayerRepo.RemoveAllPlayers();
+	}
+
+	public void InitAllManagers() {
 		// Before managing players list all stuff should be initiated to work with.
 		try {
 			/*
-			 * Is is recommended that MessageHandler comes first in case of any
+			 * Is recommended that MessageHandler comes first in case of any
 			 * errors that may occur in init of any class. MessageHandler can be used to notify
-			 * opped players that problem has occur.
+			 * opped players that problem has occurred.
 			 */
 			MessageHandler.init(this);
 			LoggerCensor.init(this);
@@ -83,7 +103,30 @@ public class UltimateLogin extends JavaPlugin {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
+	}
 
+	public void RegisterCommands() {
+		this.getCommand("register").setExecutor(new RegisterCommand());
+		this.getCommand("register").setTabCompleter(NoTabCompleter.INSTANCE);
+
+		this.getCommand("login").setExecutor(new LoginCommand());
+		this.getCommand("login").setTabCompleter(NoTabCompleter.INSTANCE);
+
+		this.getCommand("password").setExecutor(new PasswordCommand(this));
+		this.getCommand("password").setTabCompleter(NoTabCompleter.INSTANCE);
+	}
+
+	public void AddEventListeners() {
+		/*
+		 * Register listeners
+		 * PlayerRepo listens for players joining and quitting events, so they can be added
+		 * in the player list to freeze or whatever them later.
+		 */
+		getServer().getPluginManager().registerEvents(new PlayerRepo(), this);
+		getServer().getPluginManager().registerEvents(new CancellationEventsHandler(), this);
+	}
+
+	public void CheckPluginVersion() {
 		try {
 			if (VersionManager.checkVersion()) {
 				this.getLogger().log(Level.INFO,
@@ -96,39 +139,5 @@ public class UltimateLogin extends JavaPlugin {
 			this.getLogger().log(Level.WARNING,
 					"Cannot check for latest version. Probably offline?");
 		}
-
-		/*
-		 * Register listeners
-		 * PlayerRepo listens for players joining and quitting events so they can be added
-		 * in the player list to freeze or whatever them later.
-		 */
-		getServer().getPluginManager().registerEvents(new PlayerRepo(), this);
-		getServer().getPluginManager().registerEvents(new CancellationEventsHandler(), this);
-		
-		RegisterCommands();
-		
-		// Add all players to unauth list on startup
-		PlayerRepo.AddAllPlayers();
-	}
-	
-	@Override
-	public void onDisable() {
-		/* 
-		 * Always remove all players from repo when shutting down or reloading plugin or server
-		 * or else there can be some players that shouldn't have access to server but still have it.
-		 * Or in other words not removing all players from list may cause bugs.
-		 */
-		PlayerRepo.RemoveAllPlayers();
-	}
-
-	public void RegisterCommands() {
-		this.getCommand("register").setExecutor(new RegisterCommand());
-		this.getCommand("register").setTabCompleter(NoTabCompleter.INSTANCE);
-
-		this.getCommand("login").setExecutor(new LoginCommand());
-		this.getCommand("login").setTabCompleter(NoTabCompleter.INSTANCE);
-
-		this.getCommand("password").setExecutor(new PasswordCommand(this));
-		this.getCommand("password").setTabCompleter(NoTabCompleter.INSTANCE);
 	}
 }
